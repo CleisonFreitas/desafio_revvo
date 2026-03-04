@@ -1,0 +1,468 @@
+// Variáveis básicas
+$color-bg: #f3f3f3;
+$color-white: #ffffff;
+$color-primary: #00a335;
+$color-primary-dark: #008528;
+$color-text: #555555;
+$color-muted: #9b9b9b;
+$color-border: #e2e2e2;
+$font-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: $font-base;
+  color: $color-text;
+  background-color: $color-bg;
+}
+
+.wrapper {
+  width: 100%;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.75rem;
+  border-radius: 999px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+  font-size: 0.9rem;
+
+  &--primary {
+    background-color: $color-primary;
+    color: $color-white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+
+    &:hover,
+    &:focus-visible {
+      background-color: $color-primary-dark;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+    }
+  }
+}
+
+// Header
+.header {
+  background-color: $color-white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+
+  &__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+    gap: 24px;
+  }
+
+  &__logo-text {
+    font-size: 1.6rem;
+    letter-spacing: 0.22em;
+    font-weight: 300;
+  }
+
+  &__search {
+    flex: 1;
+    display: flex;
+    max-width: 480px;
+    background-color: #f7f7f7;
+    border-radius: 999px;
+    padding-left: 18px;
+    border: 1px solid transparent;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:focus-within {
+      border-color: $color-primary;
+      box-shadow: 0 0 0 2px rgba($color-primary, 0.15);
+    }
+
+    input {
+      flex: 1;
+      border: 0;
+      background: transparent;
+      font-size: 0.9rem;
+      padding: 10px 8px;
+      outline: none;
+    }
+
+    button {
+      border: 0;
+      background: transparent;
+      padding: 0 16px;
+      cursor: pointer;
+      font-size: 1.1rem;
+    }
+  }
+
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+
+    &-greeting {
+      color: $color-muted;
+    }
+
+    &-name {
+      font-weight: 600;
+    }
+  }
+
+  &__user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: $color-muted;
+    color: $color-white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+  }
+}
+
+// Hero / slideshow
+.hero {
+  position: relative;
+  background-color: #dcdcdc;
+  overflow: hidden;
+
+  &__slider {
+    position: relative;
+    min-height: 320px;
+  }
+
+  &__background {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.8);
+  }
+
+  &__content {
+    position: relative;
+    z-index: 1;
+    padding: 40px 16px 60px;
+    display: flex;
+    align-items: center;
+    min-height: 320px;
+  }
+
+  &__text {
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.92);
+    padding: 24px 28px;
+    border-radius: 4px;
+  }
+
+  &__title {
+    margin: 0 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 1.1rem;
+  }
+
+  &__description {
+    margin: 0 0 20px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  &__slide {
+    display: none;
+    position: relative;
+
+    &.is-active {
+      display: block;
+    }
+  }
+
+  &__control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    border: none;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.4rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+
+    &--prev {
+      left: 12px;
+    }
+
+    &--next {
+      right: 12px;
+    }
+  }
+
+  &__dots {
+    position: absolute;
+    left: 50%;
+    bottom: 16px;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+  }
+
+  &__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    background-color: transparent;
+    cursor: pointer;
+    padding: 0;
+
+    &.is-active {
+      background-color: #ffffff;
+    }
+  }
+}
+
+// Courses
+.courses {
+  padding: 32px 0 56px;
+
+  &__header {
+    margin-bottom: 24px;
+
+    h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+  }
+}
+
+.course-card {
+  background-color: $color-white;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &__image {
+    position: relative;
+    padding-top: 62.5%;
+    background-color: #ccc;
+    overflow: hidden;
+
+    img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    &-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: $color-primary;
+      color: $color-white;
+      font-size: 0.7rem;
+      padding: 4px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+  }
+
+  &__body {
+    padding: 14px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.2;
+    max-height: 2.4em; // clamp 2 lines approx
+    overflow: hidden;
+  }
+
+  &__description {
+    margin: 0;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    max-height: 3.4em; // clamp ~3 lines
+    overflow: hidden;
+  }
+
+  &__footer {
+    margin-top: 4px;
+  }
+}
+
+.course-card--add {
+  border: 2px dashed $color-border;
+  background-color: #f7f7f7;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px 14px;
+
+  .course-card__icon {
+    font-size: 2rem;
+    color: $color-muted;
+    margin-bottom: 10px;
+  }
+
+  .course-card__title {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+}
+
+// Footer
+.footer {
+  background-color: $color-white;
+  border-top: 1px solid $color-border;
+  padding: 26px 0 32px;
+  font-size: 0.8rem;
+  color: $color-muted;
+
+  &__inner {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+  }
+
+  &__brand {
+    flex: 2;
+  }
+
+  &__logo {
+    font-size: 1.6rem;
+    letter-spacing: 0.22em;
+    font-weight: 300;
+    margin-bottom: 10px;
+  }
+
+  &__contact,
+  &__social {
+    flex: 1;
+  }
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #777777;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 10px;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+// Responsividade
+@media (max-width: 1024px) {
+  .courses__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .header__inner {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .header__inner {
+    align-items: flex-start;
+  }
+
+  .header__search {
+    order: 3;
+    width: 100%;
+  }
+
+  .courses {
+    padding-bottom: 40px;
+  }
+
+  .courses__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .footer__inner {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .courses__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero__text {
+    padding: 18px 18px;
+  }
+
+  .hero__title {
+    font-size: 1rem;
+  }
+}
+
