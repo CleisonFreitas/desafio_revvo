@@ -5,7 +5,7 @@ const sourcemaps = require("gulp-sourcemaps");
 const rename = require("gulp-rename");
 const terser = require("gulp-terser");
 const plumber = require("gulp-plumber");
-const browserSync = require("browser-sync").create();
+const browserSync = require("browser-sync");
 
 const paths = {
   styles: {
@@ -35,7 +35,7 @@ function styles() {
     )
     .pipe(sourcemaps.write("."))
     .pipe(dest(paths.styles.dest))
-    .pipe(browserSync.stream());
+    .pipe(browserSync.reload({ stream: true }));
 }
 
 function scripts() {
@@ -51,13 +51,14 @@ function scripts() {
     )
     .pipe(sourcemaps.write("."))
     .pipe(dest(paths.scripts.dest))
-    .pipe(browserSync.stream());
+    .pipe(browserSync.reload({ stream: true }));
 }
 
 function serve() {
   browserSync.init({
-    proxy: "localhost:8000",
-    open: false,
+    proxy: "localhost:8080",
+    // automatically open the browser when the server starts
+    open: true,
     notify: false,
   });
 
