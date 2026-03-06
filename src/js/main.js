@@ -267,6 +267,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const initial = initializeSearchState();
   loadCourses(initial);
   attachSearchHandler();
+  initWelcomeModal();
 });
 
 // Mantém o termo de busca e retorna o valor para carregar
@@ -280,5 +281,54 @@ function initializeSearchState() {
   }
 
   return q;
+}
+
+// Modal management
+function initWelcomeModal() {
+  const MODAL_KEY = "leo_welcome_modal_seen";
+  const overlay = document.getElementById("welcome-modal");
+  const modalContent = overlay.querySelector(".modal-content");
+  const closeBtn = overlay.querySelector(".modal-close");
+  const primaryBtn = overlay.querySelector(".btn--modal-primary");
+
+  // Check if modal has been seen before
+  const hasSeenModal = localStorage.getItem(MODAL_KEY);
+
+  const showModal = () => {
+    overlay.classList.remove("is-hidden");
+  };
+
+  const hideModal = () => {
+    overlay.classList.add("is-hidden");
+    // Mark modal as seen
+    localStorage.setItem(MODAL_KEY, "true");
+  };
+
+  // If not seen before, show the modal
+  if (!hasSeenModal) {
+    showModal();
+  } else {
+    overlay.classList.add("is-hidden");
+  }
+
+  // Close button click
+  closeBtn.addEventListener("click", hideModal);
+
+  // Primary button click
+  primaryBtn.addEventListener("click", hideModal);
+
+  // Click on overlay to close (outside the modal content)
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay) {
+      hideModal();
+    }
+  });
+
+  // ESC key to close
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !overlay.classList.contains("is-hidden")) {
+      hideModal();
+    }
+  });
 }
 

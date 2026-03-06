@@ -7,6 +7,37 @@
     <link rel="stylesheet" href="dist/css/main.css" />
 </head>
 <body>
+    <!-- Modal Welcome -->
+    <div class="modal-overlay js-modal-overlay is-hidden" id="welcome-modal">
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Fechar modal">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="modal-illustration">
+                <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="400" height="250" fill="#FF6B5B"/>
+                    <rect x="100" y="40" width="120" height="160" rx="8" fill="#1DBCA3"/>
+                    <circle cx="180" cy="80" r="12" fill="#FF6B5B"/>
+                    <rect x="160" y="100" width="40" height="80" rx="2" fill="#FFF"/>
+                    <rect x="240" y="60" width="100" height="120" rx="8" fill="#1DBCA3"/>
+                    <circle cx="280" cy="50" r="8" fill="#2C3E50"/>
+                    <circle cx="320" cy="70" r="8" fill="#2C3E50"/>
+                </svg>
+            </div>
+            <h2 class="modal-title">EGESTAS TORTOR VULPUTATE</h2>
+            <p class="modal-description">
+                Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.
+                Donec ullamcorper nulla non metus auctor fringilla. Donec sed odio dui. Cras
+            </p>
+            <button class="btn btn--modal-primary" aria-label="Inscrever-se">
+                INSCREVA-SE
+            </button>
+        </div>
+    </div>
+
     <header class="header">
         <div class="header__inner wrapper">
             <div class="header__logo" aria-label="LEO">
