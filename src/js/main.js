@@ -30,7 +30,6 @@ const Api = {
   },
 };
 
-
 function attachSearchHandler() {
   const form = document.querySelector(".header__search");
   const input = document.querySelector("#search-input");
@@ -58,7 +57,7 @@ function attachSearchHandler() {
 function loadCourses(term = "") {
   Api.index(term).then((list) => {
     renderCoursesGrid(list);
-    // use últimos 3 cursos para o slideshow
+    // usa os últimos 3 cursos para o slideshow
     const slides = list
       .slice(-3)
       .map((c) => ({
@@ -91,7 +90,6 @@ function openCreateDialog() {
   Api.create({ title, description, thumbnail, banner, link }).then((created) => {
     const params = new URLSearchParams(window.location.search);
     loadCourses(params.get("q") || "");
-    // automatically show details of the new course
     if (created && created.id) {
       alert(`Curso criado!\nTítulo: ${created.title}\nDescrição: ${created.description}`);
     }
