@@ -1,113 +1,100 @@
-// Mock de cursos para o pilot
-const mockCourses = [
-  {
-    id: 1,
-    title: "Pellentesque malesuada",
-    description:
-      "Curabitur blandit tempus porttitor. Nulla vitae elit libero, a pharetra augue.",
-    thumbnail: "https://via.placeholder.com/320x200?text=Curso+1",
-    link: "#",
-    badge: null,
+const Api = {
+  index(search = "") {
+    const params = new URLSearchParams();
+    if (search) params.set("q", search);
+    return fetch(`/api/courses/?${params.toString()}`, {
+      credentials: "same-origin",
+    }).then((r) => r.json());
   },
-  {
-    id: 2,
-    title: "Curso avançado de UX e UI design",
-    description:
-      "Integer posuere erat a ante venenatis dapibus posuere velit aliquet.",
-    thumbnail: "https://via.placeholder.com/320x200?text=Curso+2",
-    link: "#",
-    badge: "Novo",
-  },
-  {
-    id: 3,
-    title: "Introdução à programação em JavaScript",
-    description:
-      "Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod.",
-    thumbnail: "https://via.placeholder.com/320x200?text=Curso+3",
-    link: "#",
-    badge: null,
-  },
-  {
-    id: 4,
-    title: "Fotografia para iniciantes",
-    description:
-      "Cras mattis consectetur purus sit amet fermentum. Vestibulum id ligula porta felis euismod semper.",
-    thumbnail: "https://via.placeholder.com/320x200?text=Curso+4",
-    link: "#",
-    badge: null,
-  },
-  {
-    id: 5,
-    title: "Marketing digital completo",
-    description:
-      "Nullam id dolor id nibh ultricies vehicula ut id elit. Praesent commodo cursus magna.",
-    thumbnail: "https://via.placeholder.com/320x200?text=Curso+5",
-    link: "#",
-    badge: null,
-  },
-  {
-    id: 6,
-    title: "Curso de produtividade extrema para o dia a dia profissional",
-    description:
-      "Morbi leo risus, porta ac consectetur ac, vestibulum at eros.",
-    thumbnail: "https://via.placeholder.com/320x200?text=Curso+6",
-    link: "#",
-    badge: null,
-  },
-];
 
-// Slides usam os mesmos dados, mas poderiam vir separados da API
-const mockSlides = [
-  {
-    id: 1,
-    courseId: 1,
-    title: "Lorem ipsum",
-    description:
-      "Aenean lacinia bibendum nulla sed consectetur. Duis mollis, est non commodo luctus, nisi erat porttitor ligula.",
-    image:
-      "assets/c__Users_Meu-PC_AppData_Roaming_Cursor_User_workspaceStorage_dc4b738645ce8d200b875bd2edb21a42_images_home-7589657b-0290-4a04-ae80-23687c7996a3.png",
-    link: "#",
+  show(id) {
+    return fetch(`/api/courses/${id}`, { credentials: "same-origin" }).then(
+      (r) => r.json()
+    );
   },
-  {
-    id: 2,
-    courseId: 2,
-    title: "Curso avançado de UX e UI design",
-    description:
-      "Aprenda a criar interfaces limpas e modernas com foco em usabilidade.",
-    image: "https://via.placeholder.com/1200x400?text=Slide+2",
-    link: "#",
-  },
-  {
-    id: 3,
-    courseId: 3,
-    title: "Introdução ao JavaScript moderno",
-    description:
-      "Descubra os fundamentos da linguagem da web com exemplos práticos.",
-    image: "https://via.placeholder.com/1200x400?text=Slide+3",
-    link: "#",
-  },
-];
 
-function attachSearchHandler(courses) {
+  create(data) {
+    return fetch(`/api/courses/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+      credentials: "same-origin",
+    }).then((r) => r.json());
+  },
+
+  delete(id) {
+    return fetch(`/api/courses/${id}`, {
+      method: "DELETE",
+      credentials: "same-origin",
+    }).then((r) => r.json());
+  },
+};
+
+
+function attachSearchHandler() {
   const form = document.querySelector(".header__search");
   const input = document.querySelector("#search-input");
 
   if (!form || !input) return;
 
-  // Pensado para futura integração com API:
-  // - hoje filtramos localmente a lista mock
-  // - no futuro basta trocar pelo fetch na API e atualizar o grid
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    const term = input.value.trim().toLowerCase();
+    const term = input.value.trim();
 
-    const filtered = !term
-      ? courses
-      : courses.filter((course) =>
-          course.title.toLowerCase().includes(term)
-        );
+    // update query string without reloading
+    const params = new URLSearchParams(window.location.search);
+    if (term) {
+      params.set("q", term);
+    } else {
+      params.delete("q");
+    }
+    history.replaceState({}, "", `${location.pathname}?${params.toString()}`);
 
-    renderCoursesGrid(filtered);
+    loadCourses(term);
+  });
+}
+
+// helper used by search and other actions
+function loadCourses(term = "") {
+  Api.index(term).then((list) => {
+    renderCoursesGrid(list);
+    // use últimos 3 cursos para o slideshow
+    const slides = list
+      .slice(-3)
+      .map((c) => ({
+        id: c.id,
+        courseId: c.id,
+        title: c.title,
+        description: c.description,
+        image: c.banner || c.thumbnail || "",
+        link: c.link || "#",
+      }));
+    initHeroSlider(slides);
+  });
+}
+
+// simple prompt-based creation, simulating an API call
+function openCreateDialog() {
+  const title = prompt("Título do curso?");
+  if (!title) return;
+  const description = prompt("Descrição do curso?");
+  const thumbnail = prompt(
+    "URL da imagem do card?",
+    "https://via.placeholder.com/320x200"
+  );
+  const banner = prompt(
+    "URL da imagem de banner?",
+    thumbnail.replace("320x200", "1200x400")
+  );
+  const link = prompt("Link do botão (Ver curso)?", "#");
+
+  Api.create({ title, description, thumbnail, banner, link }).then((created) => {
+    const params = new URLSearchParams(window.location.search);
+    loadCourses(params.get("q") || "");
+    // automatically show details of the new course
+    if (created && created.id) {
+      alert(`Curso criado!\nTítulo: ${created.title}\nDescrição: ${created.description}`);
+    }
   });
 }
 
@@ -120,6 +107,7 @@ function renderCoursesGrid(courses) {
   courses.forEach((course) => {
     const card = document.createElement("article");
     card.className = "course-card";
+    card.dataset.id = course.id;
 
     card.innerHTML = `
       <div class="course-card__image">
@@ -134,7 +122,8 @@ function renderCoursesGrid(courses) {
         <h3 class="course-card__title" title="${course.title}">${course.title}</h3>
         <p class="course-card__description">${course.description}</p>
         <div class="course-card__footer">
-          <a href="${course.link}" class="btn btn--primary">Ver curso</a>
+          <a href="${course.link}" class="btn btn--primary btn--view">Ver curso</a>
+          <button type="button" class="btn btn--secondary btn--delete">Excluir</button>
         </div>
       </div>
     `;
@@ -151,6 +140,42 @@ function renderCoursesGrid(courses) {
     <h3 class="course-card__title">Adicionar curso</h3>
   `;
   grid.appendChild(addCard);
+
+  // delegate events
+  grid.onclick = (e) => {
+    const target = e.target;
+
+    // add new course
+    if (target.closest(".course-card--add")) {
+      openCreateDialog();
+      return;
+    }
+
+    // view details
+    if (target.matches(".btn--view")) {
+      e.preventDefault();
+      const cardEl = target.closest(".course-card");
+      const id = parseInt(cardEl.dataset.id, 10);
+      Api.show(id).then((c) => {
+        if (c) {
+          alert(`Título: ${c.title}\nDescrição: ${c.description}`);
+        }
+      });
+      return;
+    }
+
+    // delete
+    if (target.matches(".btn--delete")) {
+      const cardEl = target.closest(".course-card");
+      const id = parseInt(cardEl.dataset.id, 10);
+      if (confirm("Deseja realmente excluir este curso?")) {
+        Api.delete(id).then(() => {
+          const params = new URLSearchParams(window.location.search);
+          loadCourses(params.get("q") || "");
+        });
+      }
+    }
+  };
 }
 
 function initHeroSlider(slides) {
@@ -241,21 +266,21 @@ function initHeroSlider(slides) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  renderCoursesGrid(mockCourses);
-  initializeSearchState();
-  attachSearchHandler(mockCourses);
-  initHeroSlider(mockSlides);
+  const initial = initializeSearchState();
+  loadCourses(initial);
+  attachSearchHandler();
 });
 
-// Mantém o termo de busca caso queira evoluir para history / query string depois
+// Mantém o termo de busca e retorna o valor para carregar
 function initializeSearchState() {
   const params = new URLSearchParams(window.location.search);
-  const q = params.get("q");
-  if (!q) return;
+  const q = params.get("q") || "";
 
   const input = document.querySelector("#search-input");
   if (input) {
     input.value = q;
   }
+
+  return q;
 }
 
