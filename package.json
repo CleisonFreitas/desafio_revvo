@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "description": "Pilot front-end do CRUD de cursos LEO em PHP + Sass com Gulp.",
   "scripts": {
-    "gulp": "gulp",
     "start": "gulp"
   },
   "devDependencies": {

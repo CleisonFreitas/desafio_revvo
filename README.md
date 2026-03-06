@@ -1,10 +1,12 @@
+## Desafio Revvo
+Plataforma de cursos Leo.
+
 ## Tecnologias Utilizadas
 
 - **Docker** (opcional, mas recomendado para PHP + MySQL)
 - **PHP 8+** (API em puro PHP orientado a objetos)
 - **MySQL** (banco de dados relacional)
 - **Node.js** (para build front-end via Gulp)
-
 
 ## Rodando o setup
 
@@ -22,6 +24,29 @@ O repositório inclui um script `setup.sh` que cuida de:
 # basta executar no diretório do projeto
 ./setup.sh
 ```
+
+## Inicialização do Front-end
+
+O script `setup.sh` já executa automaticamente os seguintes comandos:
+
+```bash
+npm install
+npm start
+
+> ⚠️ **Importante:** execute o script com seu usuário normal, **sem** `sudo`.
+> Se você rodar como root o binário `docker` pode não estar no PATH e o
+> script passará a rodar comandos `mysql` localmente, gerando mensagens
+> como:
+>
+> ```txt
+> mysql: [Warning] Using a password on the command line interface can be insecure.
+> ERROR 2002 (HY000): Can't connect to local MySQL server through socket '/var/run/mysqld/mysqld.sock' (2)
+> ```
+>
+> Caso veja esse aviso, pare a execução e verifique se o Docker está
+> instalado e ativo. Em seguida execute `./setup.sh` novamente com seu
+> usuário normal.
+
 
 O script iniciará `docker-compose` automaticamente e fará os passos
 adicionais.
@@ -45,6 +70,3 @@ Após a execução do script, `.env` conterá as configurações necessárias
 para a aplicação PHP conectar ao banco.
 
 ---
-
-Essa documentação não descreve o projeto em si; foca apenas na forma de
-colocar a infraestrutura no ar.

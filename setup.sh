@@ -6,6 +6,12 @@
 
 set -euo pipefail
 
+# warn if running as root, since docker may not be in PATH
+if [ "$(id -u)" -eq 0 ]; then
+    echo "⚠️  You are running the setup script as root; docker/ docker-compose may not be available in the root PATH."
+    echo "   Try running without sudo: ./setup.sh"
+fi
+
 # create .env from example and prompt for values if necessary
 if [ ! -f .env ]; then
     cp .env.example .env
@@ -24,14 +30,14 @@ if [ ! -f .env ]; then
         fi
         export $varname="$val"
     }
-    prompt DB_HOST "Database host" db
+    prompt DB_HOST "Database host" localhost
     prompt DB_PORT "Database port" 3306
     prompt DB_DATABASE "Database name" desafio
-    prompt DB_USERNAME "Database user" desafio_user
-    prompt DB_PASSWORD "Database password" desafio_pass
+    prompt DB_USERNAME "Database user" root
+    prompt DB_PASSWORD "Database password" secret
     prompt MYSQL_ROOT_PASSWORD "MySQL root password" secret
-    prompt MYSQL_USER "MySQL app user" desafio_user
-    prompt MYSQL_PASSWORD "MySQL app password" desafio_pass
+    prompt MYSQL_USER "MySQL app user" root
+    prompt MYSQL_PASSWORD "MySQL app password" secret
 fi
 
 # load vars from .env
@@ -44,7 +50,11 @@ ROOT_PASS=${MYSQL_ROOT_PASSWORD}
 # helper: run MySQL command in container or local
 run_mysql() {
     if command -v docker >/dev/null 2>&1; then
-        docker exec -i desafio_revvo_db mysql -u root -p"${ROOT_PASS}" -e "$1"
+        if ! docker exec -i desafio_revvo_db mysql -u root -p"${ROOT_PASS}" -e "$1"; then
+            echo "ERROR: failed to execute mysql inside container; is the container running?" >&2
+            echo "Attempting to run locally instead."
+            mysql -u root -p"${ROOT_PASS}" -e "$1"
+        fi
     else
         mysql -u root -p"${ROOT_PASS}" -e "$1"
     fi
@@ -53,7 +63,22 @@ run_mysql() {
 if command -v docker >/dev/null 2>&1; then
     echo "Ensuring Docker containers are running..."
     docker-compose up -d --build
-    sleep 5
+
+    # wait for mysql server inside container to accept connections
+    echo -n "Waiting for database to come online"
+    retries=0
+    until docker exec -i desafio_revvo_db mysql -u root -p"${ROOT_PASS}" -e "SELECT 1" >/dev/null 2>&1; do
+        retries=$((retries+1))
+        if [ $retries -ge 20 ]; then
+            echo
+            echo "ERROR: database did not start after waiting." >&2
+            exit 1
+        fi
+        echo -n "."
+        sleep 2
+    done
+    echo " done."
+
     echo "Configuring root password inside container..."
     # try directly and fall back to skip-password
     if ! docker exec -i desafio_revvo_db mysql -u root -p"${ROOT_PASS}" -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${ROOT_PASS}';" 2>/dev/null; then
@@ -73,4 +98,17 @@ else
     run_mysql "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'localhost'; FLUSH PRIVILEGES;"
     mysql -u root -p"${ROOT_PASS}" ${DB_NAME} < database.sql
     echo "Setup complete (local MySQL)."
+fi
+
+echo "Installing front-end dependencies..."
+
+if command -v npm >/dev/null 2>&1; then
+    npm install
+    echo "Starting front-end environment..."
+    npm start
+else
+    echo "⚠️  Node.js/NPM not found. Skipping front-end setup."
+    echo "Please install Node.js and run:"
+    echo "   npm install"
+    echo "   npm start"
 fi
